@@ -11,6 +11,7 @@ import Register from './views/Registro';
 import SprintDetalle from './views/SprintDetalle';
 import Protected from './components/Protected';
 import ProjectDetails from './views/ProjectDetails';  // Asegúrate de que la ruta sea correcta
+import ShoppingCart from './views/ShoppingCart';
 import app from '../firebaseconfig';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 
@@ -51,9 +52,10 @@ function App() {
         <Route path="/progreso" element={<Progress tareas={tareas} />} />
         <Route path="/sprint/:sprintIndex" element={<SprintDetalle />} />
         <Route path='/crearproyecto' element={<CrearProyecto />} />
-        <Route path="/register" element={<Register />} />
+        <Route path='/carrito' element={<ShoppingCart />} />
         <Route path="/proyecto/:id" element={<ProjectDetails tareas={tareas} completarTarea={completarTarea} />} />
       </Route>
+      <Route path="/register" element={<Register />} />
     </Routes>
   );
 }
