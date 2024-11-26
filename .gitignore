@@ -17,8 +17,6 @@ dist-ssr
 # Environment variables
 .env
 *.local
-
-# Package files
 package-lock.json
 
 # Editor directories and files
