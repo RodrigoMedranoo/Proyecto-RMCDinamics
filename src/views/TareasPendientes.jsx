@@ -54,9 +54,6 @@ const TareasPendientes = ({ completarTarea }) => {
                       alignItems="center"
                     >
                       <span>{tarea.nombre} (Estado: {tarea.estado})</span>
-                      <Button onClick={() => completarTarea(sprintIndex, tareaIndex)} colorScheme="teal">
-                        Completar
-                      </Button>
                     </ListItem>
                   ))}
                 </List>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Heading, Text, Input, Button, Stack, Checkbox, Progress, Flex, Link } from '@chakra-ui/react';
+import { Box, Heading, Text, Input, Button, Checkbox, Progress, Flex, Link } from '@chakra-ui/react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 
 const Progreso = () => {
@@ -29,6 +29,7 @@ const Progreso = () => {
         fechaInicio: '',
         fechaFin: '',
         tareas: [],
+        completado: false, // Añadido para marcar el estado del Sprint
       });
     }
 
@@ -37,15 +38,10 @@ const Progreso = () => {
   };
 
   const calcularProgresoTotal = () => {
-    let totalTareas = 0;
-    let tareasCompletadas = 0;
+    const totalSprints = sprints.length;
+    const sprintsCompletados = sprints.filter((sprint) => sprint.completado).length;
 
-    sprints.forEach((sprint) => {
-      totalTareas += sprint.tareas.length;
-      tareasCompletadas += sprint.tareas.filter((tarea) => tarea.completada).length;
-    });
-
-    return totalTareas === 0 ? 0 : (tareasCompletadas / totalTareas) * 100;
+    return totalSprints === 0 ? 0 : (sprintsCompletados / totalSprints) * 100;
   };
 
   const manejarSeleccionSprint = (nombreSprint) => {
@@ -64,7 +60,17 @@ const Progreso = () => {
 
   const manejarCambioFecha = (index, campo, valor) => {
     const sprintsActualizados = [...sprints];
-    sprintsActualizados[index][campo] = valor;
+
+    if (campo === 'fechaInicio') {
+      sprintsActualizados[index][campo] = valor;
+    } else if (campo === 'fechaFin') {
+      if (new Date(valor) < new Date(sprintsActualizados[index].fechaInicio)) {
+        alert('La fecha límite no puede ser anterior a la fecha de inicio.');
+        return;
+      }
+      sprintsActualizados[index][campo] = valor;
+    }
+
     setSprints(sprintsActualizados);
   };
 
@@ -145,31 +151,31 @@ const Progreso = () => {
                   </Flex>
                 </Flex>
 
-                {/* Resumen de estados de tareas */}
-                <Box mt={4}>
-                  {sprint.tareas.length > 0 ? (
-                    sprint.tareas.map((tarea, tareaIndex) => (
-                      <Text key={tareaIndex}>• {tarea.nombre} - Estado: {tarea.estado}</Text>
-                    ))
-                  ) : (
-                    <Text>No hay tareas en este sprint.</Text>
-                  )}
-                </Box>
+                {/* Resumen del estado del Sprint */}
+                <Text mt={4}>
+                  Estado: {sprint.completado ? 'Completado' : 'Pendiente'}
+                </Text>
 
                 {/* Inputs de fecha */}
-                <Flex mt={4} gap={4}>
-                  <Input
-                    type="date"
-                    value={sprint.fechaInicio}
-                    onChange={(e) => manejarCambioFecha(sprintIndex, 'fechaInicio', e.target.value)}
-                    placeholder="Fecha de Inicio"
-                  />
-                  <Input
-                    type="date"
-                    value={sprint.fechaFin}
-                    onChange={(e) => manejarCambioFecha(sprintIndex, 'fechaFin', e.target.value)}
-                    placeholder="Fecha de Fin"
-                  />
+                <Flex mt={4} gap={4} alignItems="center">
+                  <Box>
+                    <Text fontSize="sm" color="gray.500" mb={1}>Fecha de Inicio</Text>
+                    <Input
+                      type="date"
+                      value={sprint.fechaInicio}
+                      onChange={(e) => manejarCambioFecha(sprintIndex, 'fechaInicio', e.target.value)}
+                    />
+                  </Box>
+                  {sprint.fechaInicio && (
+                    <Box>
+                      <Text fontSize="sm" color="gray.500" mb={1}>Fecha Límite</Text>
+                      <Input
+                        type="date"
+                        value={sprint.fechaFin}
+                        onChange={(e) => manejarCambioFecha(sprintIndex, 'fechaFin', e.target.value)}
+                      />
+                    </Box>
+                  )}
                 </Flex>
               </Box>
             ))
