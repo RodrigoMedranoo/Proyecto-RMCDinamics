@@ -57,6 +57,9 @@ const Profile = () => {
             <Link as={RouterLink} to="/profile" mx={4} p={2} rounded="md" _hover={{ bg: 'teal.500', color: 'white' }}>
               Información de Usuario
             </Link>
+            <Link as={RouterLink} to="/carrito" mx={4} p={2} rounded="md" _hover={{ bg: 'teal.500', color: 'white' }}>
+            Carrito
+          </Link>
           </Flex>
         </Box>
 

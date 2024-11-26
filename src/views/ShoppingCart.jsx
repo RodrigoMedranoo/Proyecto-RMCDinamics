@@ -20,7 +20,7 @@ const ShoppingCart = () => {
   const [cart, setCart] = useState([]);
   const [productName, setProductName] = useState('');
   const [productPrice, setProductPrice] = useState('');
-  const token = process.env.REACT_APP_GITHUB_TOKEN;
+  const token = import.meta.env.VITE_GITHUB_TOKEN;
   const toast = useToast();
 
   useEffect(() => {
@@ -58,7 +58,7 @@ const ShoppingCart = () => {
   };
 
   const saveCartToGitHub = async () => {
-    const repo = "DavidWuty/PruebasAPI";
+    const repo = "RodrigoMedranoo/Proyecto-RMCDinamics";
     const path = "carrito.json";
     const message = "Guardar carrito";
     const content = btoa(JSON.stringify(cart, null, 2));
@@ -143,14 +143,17 @@ const ShoppingCart = () => {
       {/* Navbar */}
       <Box as="nav" mb={8}>
         <Flex as="ul" listStyleType="none" p={0} m={0} justify="center" wrap="wrap">
-          <Link as={RouterLink} to="/" mx={4} p={2} rounded="md" _hover={{ bg: 'teal.500', color: 'white' }}>
-            Inicio
-          </Link>
-          <Link as={RouterLink} to="/carrito" mx={4} p={2} rounded="md" _hover={{ bg: 'teal.500', color: 'white' }}>
+        <Link as={RouterLink} to="/" mx={4} p={2} rounded="md" _hover={{ bg: 'teal.500', color: 'white' }}>
+              Inicio
+            </Link>
+            <Link as={RouterLink} to="/crearproyecto" mx={4} p={2} rounded="md" _hover={{ bg: 'teal.500', color: 'white' }}>
+              Crear Proyecto
+            </Link>
+            <Link as={RouterLink} to="/profile" mx={4} p={2} rounded="md" _hover={{ bg: 'teal.500', color: 'white' }}>
+              Información de Usuario
+            </Link>
+            <Link as={RouterLink} to="/carrito" mx={4} p={2} rounded="md" _hover={{ bg: 'teal.500', color: 'white' }}>
             Carrito
-          </Link>
-          <Link as={RouterLink} to="/profile" mx={4} p={2} rounded="md" _hover={{ bg: 'teal.500', color: 'white' }}>
-            Perfil
           </Link>
         </Flex>
       </Box>
