@@ -1,15 +1,24 @@
   import React, { useState, useEffect } from 'react';
   import { Box, Heading, Text, Container, VStack, Button, Flex, Link, Image } from '@chakra-ui/react';
   import { Link as RouterLink } from 'react-router-dom';
+  import { getProyectos } from "../api"; // Importamos la función de la API
+
 
   function Home() {
     const [proyectos, setProyectos] = useState([]);
 
     useEffect(() => {
-      // Obtener los proyectos guardados desde el localStorage
-      const proyectosGuardados = JSON.parse(localStorage.getItem('proyectos')) || [];
-      setProyectos(proyectosGuardados);
-    }, []);
+      const fetchProyectos = async () => {
+        try {
+          const proyectosBackend = await getProyectos();
+          setProyectos(proyectosBackend);
+        } catch (error) {
+          console.error("Error al obtener proyectos:", error);
+        }
+      };
+    
+      fetchProyectos();
+    }, [location]); 
 
     const eliminarProyecto = (id) => {
       const nuevosProyectos = proyectos.filter(proyecto => proyecto.id !== id);

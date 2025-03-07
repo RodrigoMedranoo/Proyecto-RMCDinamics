@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { Box, FormControl, FormLabel, Input, Button, Container, Textarea, Flex, VStack, Link, Select, Image, Radio, RadioGroup, Stack } from '@chakra-ui/react';
+import { Box, FormControl, FormLabel, Input, Button, Container, Textarea, Flex, VStack, Image, Radio, RadioGroup, Stack, Link } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
-import { Link as RouterLink } from 'react-router-dom';
+import { crearProyecto } from '../api'; // Importa la función para interactuar con el backend
+import { Select } from '@chakra-ui/react';  // Asegúrate de importarlo
+import { Link as RouterLink } from 'react-router-dom';  // Importar RouterLink para enlaces react-router
 
 // Imágenes predeterminadas
 import Image1 from '../assets/predeterminadas/image1.jpg';
@@ -11,27 +13,28 @@ import Image3 from '../assets/predeterminadas/image3.jpg';
 const CrearProyecto = () => {
   const [nombre, setNombre] = useState('');
   const [descripcion, setDescripcion] = useState('');
-  const [imagen, setImagen] = useState(Image1); // Imagen predeterminada
-  const [personalizada, setPersonalizada] = useState(null); // Imagen personalizada
-  const [tipoImagen, setTipoImagen] = useState('predeterminada'); // Controla si es personalizada o predeterminada
+  const [imagen, setImagen] = useState(Image1);
+  const [personalizada, setPersonalizada] = useState(null);
+  const [tipoImagen, setTipoImagen] = useState('predeterminada');
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Crear un nuevo proyecto con imagen predeterminada o personalizada
+
     const nuevoProyecto = {
-      id: Date.now(),
       nombre,
       descripcion,
-      imagen: personalizada || imagen, // Usar la imagen seleccionada o personalizada
+      imagen: personalizada || imagen,
       fecha: new Date().toISOString(),
     };
-    // Guardar el proyecto en localStorage
-    const proyectosGuardados = JSON.parse(localStorage.getItem('proyectos')) || [];
-    proyectosGuardados.push(nuevoProyecto);
-    localStorage.setItem('proyectos', JSON.stringify(proyectosGuardados));
-    // Redirigir al inicio
-    navigate('/');
+
+    const proyectoCreado = await crearProyecto(nuevoProyecto);
+
+    if (proyectoCreado) {
+      navigate('/'); // Redirigir al Home después de crear
+    } else {
+      alert("Error al crear el proyecto.");
+    }
   };
 
   const handlePersonalizadaChange = (e) => {
@@ -46,7 +49,7 @@ const CrearProyecto = () => {
   };
 
   return (
-    <Container maxW="container.md" py={4}>
+    <>
       {/* Navbar */}
       <Box as="nav" mb={8}>
         <Flex as="ul" listStyleType="none" p={0} m={0} justify="center" wrap="wrap">
@@ -64,72 +67,54 @@ const CrearProyecto = () => {
           </Link>
         </Flex>
       </Box>
-      <Box as="form" onSubmit={handleSubmit} borderWidth={1} borderRadius="md" p={4} boxShadow="md">
-        <VStack spacing={4} align="stretch">
-          <FormControl>
-            <FormLabel htmlFor="nombre">Nombre del Proyecto</FormLabel>
-            <Input
-              id="nombre"
-              type="text"
-              value={nombre}
-              onChange={(e) => setNombre(e.target.value)}
-              required
-            />
-          </FormControl>
-          <FormControl>
-            <FormLabel htmlFor="descripcion">Descripción del Proyecto</FormLabel>
-            <Textarea
-              id="descripcion"
-              value={descripcion}
-              onChange={(e) => setDescripcion(e.target.value)}
-              required
-            />
-          </FormControl>
-          <FormControl>
-            <FormLabel>¿Quieres una imagen predeterminada o personalizada?</FormLabel>
-            <RadioGroup onChange={setTipoImagen} value={tipoImagen}>
-              <Stack direction="row">
-                <Radio value="predeterminada">Predeterminada</Radio>
-                <Radio value="personalizada">Personalizada</Radio>
-              </Stack>
-            </RadioGroup>
-          </FormControl>
-          
-          {tipoImagen === 'predeterminada' && (
-            <FormControl>
-              <FormLabel htmlFor="imagen">Selecciona una Imagen Predeterminada</FormLabel>
-              <Select
-                id="imagen"
-                value={imagen}
-                onChange={(e) => setImagen(e.target.value)}
-              >
-                <option value={Image1}>Imagen 1</option>
-                <option value={Image2}>Imagen 2</option>
-                <option value={Image3}>Imagen 3</option>
-              </Select>
-              <Image src={imagen} alt="Previsualización" boxSize="150px" mt={2} />
-            </FormControl>
-          )}
 
-          {tipoImagen === 'personalizada' && (
+      {/* Formulario Crear Proyecto */}
+      <Container maxW="container.md" py={4}>
+        <Box as="form" onSubmit={handleSubmit} borderWidth={1} borderRadius="md" p={4} boxShadow="md">
+          <VStack spacing={4} align="stretch">
             <FormControl>
-              <FormLabel htmlFor="personalizada">Carga una Imagen Personalizada</FormLabel>
-              <Input
-                id="personalizada"
-                type="file"
-                accept="image/*"
-                onChange={handlePersonalizadaChange}
-              />
-              {personalizada && <Image src={personalizada} alt="Previsualización personalizada" boxSize="150px" mt={2} />}
+              <FormLabel htmlFor="nombre">Nombre del Proyecto</FormLabel>
+              <Input id="nombre" type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} required />
             </FormControl>
-          )}
+            <FormControl>
+              <FormLabel htmlFor="descripcion">Descripción del Proyecto</FormLabel>
+              <Textarea id="descripcion" value={descripcion} onChange={(e) => setDescripcion(e.target.value)} required />
+            </FormControl>
+            <FormControl>
+              <FormLabel>¿Quieres una imagen predeterminada o personalizada?</FormLabel>
+              <RadioGroup onChange={setTipoImagen} value={tipoImagen}>
+                <Stack direction="row">
+                  <Radio value="predeterminada">Predeterminada</Radio>
+                  <Radio value="personalizada">Personalizada</Radio>
+                </Stack>
+              </RadioGroup>
+            </FormControl>
 
-          <Button type="submit" colorScheme="teal">
-            Crear Proyecto
-          </Button>
-        </VStack>
-      </Box>
-    </Container>
+            {tipoImagen === 'predeterminada' && (
+              <FormControl>
+                <FormLabel htmlFor="imagen">Selecciona una Imagen Predeterminada</FormLabel>
+                <Select id="imagen" value={imagen} onChange={(e) => setImagen(e.target.value)}>
+                  <option value={Image1}>Imagen 1</option>
+                  <option value={Image2}>Imagen 2</option>
+                  <option value={Image3}>Imagen 3</option>
+                </Select>
+                <Image src={imagen} alt="Previsualización" boxSize="150px" mt={2} />
+              </FormControl>
+            )}
+
+            {tipoImagen === 'personalizada' && (
+              <FormControl>
+                <FormLabel htmlFor="personalizada">Carga una Imagen Personalizada</FormLabel>
+                <Input id="personalizada" type="file" accept="image/*" onChange={handlePersonalizadaChange} />
+                {personalizada && <Image src={personalizada} alt="Previsualización personalizada" boxSize="150px" mt={2} />}
+              </FormControl>
+            )}
+
+            <Button type="submit" colorScheme="teal">Crear Proyecto</Button>
+          </VStack>
+        </Box>
+      </Container>
+    </>
   );
 };
 
