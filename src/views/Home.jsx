@@ -1,7 +1,8 @@
   import React, { useState, useEffect } from 'react';
   import { Box, Heading, Text, Container, VStack, Button, Flex, Link, Image } from '@chakra-ui/react';
   import { Link as RouterLink } from 'react-router-dom';
-  import { getProyectos } from "../api"; // Importamos la función de la API
+  import { getProyectos, eliminarProyectoAPI } from "../api"; // Importamos la función de la API
+ 
 
 
   function Home() {
@@ -20,11 +21,14 @@
       fetchProyectos();
     }, [location]); 
 
-    const eliminarProyecto = (id) => {
-      const nuevosProyectos = proyectos.filter(proyecto => proyecto.id !== id);
-      setProyectos(nuevosProyectos);
-      localStorage.setItem('proyectos', JSON.stringify(nuevosProyectos));
-    };
+    const eliminarProyecto = async (id) => {
+  const eliminado = await eliminarProyectoAPI(id);
+  if (eliminado) {
+    setProyectos(proyectos.filter(proyecto => proyecto._id !== id)); // Filtra proyectos después de eliminar en MongoDB
+  } else {
+    alert("Error al eliminar el proyecto.");
+  }
+};
 
     return (
       <Container maxW="container.xl" py={4}>
@@ -88,7 +92,7 @@
                     Ver Detalles
                     </Button>
 
-                    <Button colorScheme="red" onClick={() => eliminarProyecto(proyecto.id)}>
+                    <Button colorScheme="red" onClick={() => eliminarProyecto(proyecto._id)}>
                       Eliminar
                     </Button>
                   </Flex>

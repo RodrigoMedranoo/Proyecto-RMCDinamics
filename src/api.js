@@ -23,3 +23,23 @@ export const crearProyecto = async (nuevoProyecto) => {
     return null;
   }
 };
+
+// Eliminar proyecto 
+
+export const eliminarProyectoAPI = async (id) => {
+  try {
+    const response = await fetch(`http://localhost:5000/api/proyectos/${id}`, {
+      method: "DELETE",
+    });
+
+    if (!response.ok) {
+      throw new Error("Error al eliminar el proyecto");
+    }
+
+    return true;
+  } catch (error) {
+    console.error("Error eliminando proyecto:", error);
+    return false;
+  }
+};
+
